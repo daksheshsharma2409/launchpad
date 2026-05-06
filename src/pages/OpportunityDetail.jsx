@@ -10,8 +10,9 @@ import Badge from "../components/ui/Badge";
 export const OpportunityDetail = () => {
   const { id } = useParams();
   const opportunity = getOpportunityById(id);
-  const { savedOpportunities, toggleSave } = useApp();
+  const { savedOpportunities, toggleSave, appliedOpportunities, applyOpportunity } = useApp();
   const isSaved = opportunity && savedOpportunities.includes(opportunity.id);
+  const isApplied = opportunity && appliedOpportunities.includes(opportunity.id);
   
   const countdownRef = useRef(null);
 
@@ -63,12 +64,15 @@ export const OpportunityDetail = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           {/* Left Graphic Placeholder */}
-          <div className="w-full md:w-1/3 aspect-square bg-[#4a4a4a] rounded-lg overflow-hidden flex items-center justify-center relative">
-            {/* Abstract Shapes placeholder matching design */}
-            <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" className="text-[#f5c518]">
-               <path d="M50 0L100 50L50 100L0 50L50 0Z" fill="currentColor" opacity="0.8" />
-               <path d="M20 20L80 20L50 80Z" fill="#f5f0e8" opacity="0.9" />
-            </svg>
+          <div className="w-full md:w-1/3 aspect-square bg-[#f5f0e8] border border-[#d1cdc5] rounded-lg overflow-hidden flex items-center justify-center relative p-8">
+             {opportunity.logoUrl ? (
+               <img src={opportunity.logoUrl} alt={opportunity.org} className="w-full h-full object-contain drop-shadow-md rounded-full border-4 border-white" />
+             ) : (
+               <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" className="text-[#f5c518]">
+                 <path d="M50 0L100 50L50 100L0 50L50 0Z" fill="currentColor" opacity="0.8" />
+                 <path d="M20 20L80 20L50 80Z" fill="#111111" opacity="0.9" />
+               </svg>
+             )}
           </div>
 
           {/* Right Text */}
@@ -151,10 +155,30 @@ export const OpportunityDetail = () => {
 
             <section>
               <h2 className="font-display font-black text-3xl text-[#111111] mb-4">Location</h2>
-              <div className="w-full h-48 bg-[#7c786a] rounded-lg overflow-hidden relative border border-[#d1cdc5]">
-                {/* Map abstract visual */}
-                <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #000 0, #000 1px, transparent 0, transparent 50%), repeating-linear-gradient(135deg, #000 0, #000 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' }}></div>
-                <div className="absolute bottom-4 left-4 bg-white px-3 py-2 rounded text-sm font-medium flex items-center gap-2 shadow-sm">
+              <div className="w-full h-64 bg-[#e5e3df] rounded-lg overflow-hidden relative border border-[#d1cdc5]">
+                {opportunity.mode === 'remote' ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-[#6b7280]">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mb-2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <span className="font-medium">This is a fully remote opportunity.</span>
+                  </div>
+                ) : (
+                  <iframe 
+                    title="map"
+                    width="100%" 
+                    height="100%" 
+                    style={{ border: 0, position: 'absolute', inset: 0, zIndex: 1 }} 
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(opportunity.location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`} 
+                    frameBorder="0" 
+                    scrolling="no" 
+                    marginHeight="0" 
+                    marginWidth="0"
+                  ></iframe>
+                )}
+                <div className="absolute bottom-4 left-4 bg-white px-3 py-2 rounded text-sm font-medium flex items-center gap-2 shadow-sm z-10 pointer-events-none">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
@@ -180,21 +204,78 @@ export const OpportunityDetail = () => {
               </div>
 
               <div className="w-full space-y-3 mb-6">
-                <button className="w-full bg-[#111111] text-white font-medium py-3 rounded-full hover:bg-[#333] transition-colors shadow-md">
-                  Apply Now
+                <a 
+                  href={opportunity.url || "#"} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block w-full bg-[#111111] text-white font-medium py-3 rounded-full hover:bg-[#333] transition-colors shadow-md text-center"
+                >
+                  Apply on {opportunity.source || "Site"}
+                </a>
+                
+                <button 
+                  onClick={() => applyOpportunity(opportunity.id)}
+                  disabled={isApplied}
+                  className={`w-full font-medium py-3 rounded-full border transition-colors flex items-center justify-center gap-2 ${
+                    isApplied 
+                      ? 'bg-[#2563eb] text-white border-[#2563eb]' 
+                      : 'bg-transparent text-[#111111] border-[#111111] hover:bg-black/5'
+                  }`}
+                >
+                  {isApplied ? "Applied ✓" : "Mark as Applied"}
                 </button>
-                <button className="w-full bg-transparent border border-[#111111] text-[#111111] font-medium py-3 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                    <polyline points="16 6 12 2 8 6"></polyline>
-                    <line x1="12" y1="2" x2="12" y2="15"></line>
-                  </svg>
-                  Share this
-                </button>
+
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      if (navigator.share) {
+                        navigator.share({
+                          title: opportunity.title,
+                          text: `Check out ${opportunity.title} on Launchpad!`,
+                          url: window.location.href,
+                        }).catch(console.error);
+                      } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert("Link copied to clipboard!");
+                      }
+                    }}
+                    className="flex-1 bg-transparent border border-[#111111] text-[#111111] font-medium py-3 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                      <polyline points="16 6 12 2 8 6"></polyline>
+                      <line x1="12" y1="2" x2="12" y2="15"></line>
+                    </svg>
+                    Share
+                  </button>
+                  <button
+                    onClick={() => toggleSave(opportunity.id)}
+                    className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full border transition-colors ${
+                      isSaved
+                        ? "bg-[#111111] border-[#111111] text-white"
+                        : "bg-transparent border-[#111111] text-[#111111] hover:bg-black/5"
+                    }`}
+                    title={isSaved ? "Unsave" : "Save"}
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill={isSaved ? "currentColor" : "none"}
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
-              <div className="text-xs text-[#6b7280] border-t border-[#d1cdc5] pt-4 w-full">
-                Organized by {opportunity.org}
+              <div className="text-xs text-[#6b7280] border-t border-[#d1cdc5] pt-4 w-full flex flex-col gap-1">
+                <span>Organized by {opportunity.org}</span>
+                {opportunity.source && <span>Sourced from {opportunity.source}</span>}
               </div>
             </div>
           </div>
@@ -204,10 +285,15 @@ export const OpportunityDetail = () => {
       <Footer />
       
       {/* Mobile Fixed Apply Button */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#f5f0e8]/90 backdrop-blur border-t border-[#d1cdc5] z-40">
-         <button className="w-full bg-[#111111] text-white font-medium py-3.5 rounded-full shadow-lg">
-            Apply Now
-         </button>
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#f5f0e8]/90 backdrop-blur border-t border-[#d1cdc5] z-40 flex gap-2">
+         <a 
+            href={opportunity.url || "#"} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex-1 bg-[#111111] text-white font-medium py-3.5 rounded-full shadow-lg text-center"
+         >
+            Apply on {opportunity.source || "Site"}
+         </a>
       </div>
     </div>
   );

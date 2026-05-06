@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useApp } from "../context/AppContext";
@@ -6,14 +6,18 @@ import { interestTags, branchOptions, yearOptions } from "../data/tags";
 
 export const Onboarding = () => {
   const navigate = useNavigate();
-  const { updatePreferences, completeOnboarding, userPreferences } = useApp();
+  const { updatePreferences, completeOnboarding, userPreferences, login, signup } = useApp();
   
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // 0: Auth choice, 1: Login/Signup form, 2: Interests, 3: Details, 4: Done
+  const [authMode, setAuthMode] = useState(""); // "login" or "signup"
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+
   const [interests, setInterests] = useState(userPreferences.interests || []);
   const [branch, setBranch] = useState(userPreferences.branch || "");
   const [year, setYear] = useState(userPreferences.year || "");
-  const [skills, setSkills] = useState(userPreferences.skills || []);
-  const [skillInput, setSkillInput] = useState("");
 
   const handleInterestToggle = (tag) => {
     setInterests(prev => 
@@ -21,28 +25,40 @@ export const Onboarding = () => {
     );
   };
 
-  const handleSkillAdd = (e) => {
-    if (e.key === 'Enter' && skillInput.trim()) {
-      e.preventDefault();
-      if (!skills.includes(skillInput.trim())) {
-        setSkills([...skills, skillInput.trim()]);
+
+
+  const handleAuthSubmit = (e) => {
+    e.preventDefault();
+    setAuthError("");
+    if (authMode === "signup" && !fullname.trim()) {
+      setAuthError("Please fill in your full name.");
+      return;
+    }
+    if (!email.trim() || !password.trim()) {
+      setAuthError("Please fill in all fields.");
+      return;
+    }
+
+    if (authMode === "login") {
+      const res = login(email, password);
+      if (res.success) {
+        completeOnboarding();
+        navigate("/discover");
+      } else {
+        setAuthError(res.error);
       }
-      setSkillInput("");
+    } else {
+      const res = signup(fullname, email, password);
+      if (res.success) {
+        setStep(2); // move to interests
+      } else {
+        setAuthError(res.error);
+      }
     }
   };
 
-  const removeSkill = (skill) => {
-    setSkills(skills.filter(s => s !== skill));
-  };
-
-  const nextStep = () => {
-    if (step === 1 && interests.length === 0) return; // simple validation
-    if (step === 2 && (!branch || !year)) return;
-    setStep(s => s + 1);
-  };
-
   const finish = () => {
-    updatePreferences({ interests, branch, year, skills });
+    updatePreferences({ interests, branch, year });
     completeOnboarding();
     navigate("/discover");
   };
@@ -56,22 +72,129 @@ export const Onboarding = () => {
   return (
     <div className="min-h-screen bg-[#f5f0e8] flex flex-col items-center justify-center p-4">
       
-      {/* Progress Dots */}
-      <div className="absolute top-12 flex gap-2">
-        {[1, 2, 3].map(i => (
-          <div 
-            key={i} 
-            className={`w-2 h-2 rounded-full transition-colors ${i <= step ? 'bg-[#111111]' : 'border border-[#d1cdc5] bg-transparent'}`}
-          />
-        ))}
-      </div>
+      {/* Progress Dots (only show during preferences steps) */}
+      {step >= 2 && (
+        <div className="absolute top-12 flex gap-2">
+          {[2, 3, 4].map(i => (
+            <div 
+              key={i} 
+              className={`w-2 h-2 rounded-full transition-colors ${i <= step ? 'bg-[#111111]' : 'border border-[#d1cdc5] bg-transparent'}`}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="w-full max-w-xl relative h-[400px]">
         <AnimatePresence mode="wait">
           
+          {step === 0 && (
+            <motion.div
+              key="step0"
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 flex flex-col items-center justify-center text-center"
+            >
+              <h1 className="font-display font-black text-5xl md:text-6xl text-[#111111] mb-3">
+                Welcome to Launchpad <span className="text-4xl inline-block -translate-y-2">🚀</span>
+              </h1>
+              <p className="text-[#6b7280] mb-10 max-w-sm mx-auto">
+                Your portal to the best hackathons, internships, and opportunities.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs mx-auto">
+                <button 
+                  onClick={() => { setAuthMode("signup"); setStep(1); }}
+                  className="w-full bg-[#111111] text-white px-8 py-3 rounded-full font-medium hover:bg-[#333] transition-colors"
+                >
+                  Sign Up
+                </button>
+                <button 
+                  onClick={() => { setAuthMode("login"); setStep(1); }}
+                  className="w-full bg-transparent border border-[#111111] text-[#111111] px-8 py-3 rounded-full font-medium hover:bg-black/5 transition-colors"
+                >
+                  Login
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           {step === 1 && (
             <motion.div
               key="step1"
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 flex flex-col items-center justify-center w-full max-w-xs mx-auto"
+            >
+              <h1 className="font-display font-black text-4xl text-[#111111] mb-6 text-center">
+                {authMode === "login" ? "Welcome Back" : "Create Account"}
+              </h1>
+              
+              <form onSubmit={handleAuthSubmit} className="w-full space-y-4">
+                {authError && (
+                  <div className="bg-red-50 text-red-600 text-xs p-3 rounded border border-red-200">
+                    {authError}
+                  </div>
+                )}
+                {authMode === "signup" && (
+                  <div>
+                    <label className="block text-xs font-medium text-[#111111] mb-1">Full Name</label>
+                    <input 
+                      type="text" 
+                      value={fullname}
+                      onChange={e => setFullname(e.target.value)}
+                      className="w-full bg-white border border-[#d1cdc5] rounded p-2.5 text-sm outline-none focus:border-[#111111]"
+                      placeholder="John Doe"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-xs font-medium text-[#111111] mb-1">Email</label>
+                  <input 
+                    type="email" 
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full bg-white border border-[#d1cdc5] rounded p-2.5 text-sm outline-none focus:border-[#111111]"
+                    placeholder="student@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#111111] mb-1">Password</label>
+                  <input 
+                    type="password" 
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full bg-white border border-[#d1cdc5] rounded p-2.5 text-sm outline-none focus:border-[#111111]"
+                    placeholder="••••••••"
+                  />
+                </div>
+                
+                <button 
+                  type="submit"
+                  className="w-full bg-[#111111] text-white px-8 py-3 rounded-full font-medium mt-2 transition-colors hover:bg-[#333]"
+                >
+                  {authMode === "login" ? "Login" : "Sign Up"}
+                </button>
+                
+                <button 
+                  type="button"
+                  onClick={() => { setStep(0); setAuthError(""); setFullname(""); setEmail(""); setPassword(""); }}
+                  className="w-full text-sm text-[#6b7280] hover:text-[#111111] mt-2 underline underline-offset-4"
+                >
+                  Go back
+                </button>
+              </form>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step2"
               variants={slideVariants}
               initial="enter"
               animate="center"
@@ -108,7 +231,7 @@ export const Onboarding = () => {
 
               <div className="mt-auto">
                 <button 
-                  onClick={nextStep}
+                  onClick={() => setStep(3)}
                   disabled={interests.length === 0}
                   className="bg-[#111111] text-white px-8 py-3 rounded-full font-medium disabled:opacity-50 transition-opacity"
                 >
@@ -118,9 +241,9 @@ export const Onboarding = () => {
             </motion.div>
           )}
 
-          {step === 2 && (
+          {step === 3 && (
             <motion.div
-              key="step2"
+              key="step3"
               variants={slideVariants}
               initial="enter"
               animate="center"
@@ -158,30 +281,18 @@ export const Onboarding = () => {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-[#111111] mb-1">Key Skills</label>
-                  <div className="w-full bg-white border border-[#d1cdc5] rounded p-2 text-sm flex flex-wrap gap-2 focus-within:border-[#111111]">
-                    {skills.map(skill => (
-                      <span key={skill} className="bg-[#f5f0e8] border border-[#d1cdc5] px-2 py-0.5 rounded text-xs flex items-center gap-1">
-                        {skill}
-                        <button onClick={() => removeSkill(skill)} className="text-[#6b7280] hover:text-[#111111]">×</button>
-                      </span>
-                    ))}
-                    <input 
-                      type="text" 
-                      value={skillInput}
-                      onChange={e => setSkillInput(e.target.value)}
-                      onKeyDown={handleSkillAdd}
-                      placeholder={skills.length === 0 ? "Type and press enter..." : ""}
-                      className="flex-grow outline-none bg-transparent min-w-[120px]"
-                    />
-                  </div>
-                </div>
+
               </div>
 
-              <div className="mt-auto">
+              <div className="mt-auto flex gap-4">
                 <button 
-                  onClick={nextStep}
+                  onClick={() => setStep(2)}
+                  className="bg-transparent border border-[#111111] text-[#111111] px-8 py-3 rounded-full font-medium transition-colors hover:bg-black/5"
+                >
+                  Back
+                </button>
+                <button 
+                  onClick={() => setStep(4)}
                   disabled={!branch || !year}
                   className="bg-[#111111] text-white px-8 py-3 rounded-full font-medium disabled:opacity-50 transition-opacity"
                 >
@@ -191,9 +302,9 @@ export const Onboarding = () => {
             </motion.div>
           )}
 
-          {step === 3 && (
+          {step === 4 && (
             <motion.div
-              key="step3"
+              key="step4"
               variants={slideVariants}
               initial="enter"
               animate="center"
@@ -223,12 +334,7 @@ export const Onboarding = () => {
                   <span className="text-xs font-bold text-[#6b7280] uppercase tracking-wider block mb-1">Studying</span>
                   <p className="text-sm text-[#111111] font-medium">{branch}</p>
                 </div>
-                {skills.length > 0 && (
-                  <div>
-                    <span className="text-xs font-bold text-[#6b7280] uppercase tracking-wider block mb-1">Skills</span>
-                    <p className="text-sm text-[#111111] font-medium">{skills.join(", ")}</p>
-                  </div>
-                )}
+
               </div>
 
               <div className="mt-auto">

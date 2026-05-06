@@ -7,7 +7,7 @@ export const FilterBar = ({ activeCategory }) => {
       {categories.map((cat) => (
         <Link
           key={cat.id}
-          to={cat.id === "all" ? "/discover" : `/${cat.id}s`}
+          to={cat.id === "all" ? "/discover" : cat.id === "cultural" ? "/cultural" : `/${cat.id}s`}
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
             activeCategory === cat.id
               ? "bg-[#111111] text-white border-[#111111]"

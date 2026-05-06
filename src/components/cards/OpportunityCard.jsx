@@ -16,11 +16,25 @@ export const OpportunityCard = ({ opportunity, index }) => {
       className="bg-[#f5f0e8] border border-[#d1cdc5] rounded-lg p-5 flex flex-col h-full hover:border-[#111111] transition-colors group relative"
     >
       <div className="flex justify-between items-start mb-3">
-        <span className="text-[11px] font-bold tracking-wider text-[#6b7280] uppercase">
-          {opportunity.org}
-        </span>
-        {opportunity.isNew && <Badge variant="green">NEW</Badge>}
-        {opportunity.isClosingSoon && !opportunity.isNew && <Badge variant="red">CLOSING SOON</Badge>}
+        <div className="flex items-center gap-2">
+          {opportunity.logoUrl && (
+            <img src={opportunity.logoUrl} alt={opportunity.org} className="w-8 h-8 rounded-full border border-[#d1cdc5] bg-white object-cover" />
+          )}
+          <div className="flex flex-col">
+            <span className="text-[11px] font-bold tracking-wider text-[#6b7280] uppercase">
+              {opportunity.org}
+            </span>
+            {opportunity.source && (
+              <span className="text-[9px] text-[#2563eb] font-medium tracking-wider uppercase">
+                via {opportunity.source}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          {opportunity.isNew && <Badge variant="green">NEW</Badge>}
+          {opportunity.isClosingSoon && !opportunity.isNew && <Badge variant="red">URGENT</Badge>}
+        </div>
       </div>
 
       <h3 className="font-display font-bold text-2xl text-[#111111] leading-tight mb-2 group-hover:text-[#2563eb] transition-colors">

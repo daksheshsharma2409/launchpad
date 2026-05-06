@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useApp } from "../../context/AppContext";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -17,6 +18,8 @@ const navLinks = [
 const Navbar = () => {
   const navRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { currentUser, login, logout } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
 
@@ -72,12 +75,24 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            <Link
-              to="/saved"
-              className="hidden sm:inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#333] transition-colors"
-            >
-              Save an opportunity
-            </Link>
+            {currentUser ? (
+              <div className="hidden sm:flex items-center gap-3">
+                <Link
+                  to="/profile"
+                  className="w-8 h-8 rounded-full bg-[#f5c518] text-[#111111] font-bold flex items-center justify-center shadow-sm border border-[#111111] hover:scale-105 transition-transform"
+                  title="Profile"
+                >
+                  {currentUser.name ? currentUser.name[0].toUpperCase() : "U"}
+                </Link>
+              </div>
+            ) : (
+              <button
+                onClick={() => login({ name: "Student Demo" })}
+                className="hidden sm:inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#333] transition-colors"
+              >
+                Login
+              </button>
+            )}
             {/* Mobile hamburger */}
             <button
               className="md:hidden p-2 rounded text-[#111111]"
@@ -109,13 +124,37 @@ const Navbar = () => {
               {label}
             </Link>
           ))}
-          <Link
-            to="/saved"
-            onClick={() => setMenuOpen(false)}
-            className="mt-2 inline-flex items-center justify-center bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full"
-          >
-            Save an opportunity
-          </Link>
+          {currentUser ? (
+            <>
+              <Link
+                to="/profile"
+                onClick={() => setMenuOpen(false)}
+                className="mt-2 inline-flex items-center justify-center bg-[#f5c518] text-[#111111] text-sm font-bold px-4 py-2 rounded-full border border-[#111111]"
+              >
+                Profile
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                  navigate("/");
+                }}
+                className="mt-2 inline-flex items-center justify-center border border-[#111111] text-[#111111] text-sm font-medium px-4 py-2 rounded-full"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                login({ name: "Student Demo" });
+                setMenuOpen(false);
+              }}
+              className="mt-2 inline-flex items-center justify-center bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full"
+            >
+              Login
+            </button>
+          )}
         </div>
       )}
     </nav>

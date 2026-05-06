@@ -6,11 +6,6 @@ const footerLinks = {
     { label: "About", to: "/" },
     { label: "Categories", to: "/discover" },
   ],
-  GitHub: [
-    { label: "GitHub", to: "https://github.com", external: true },
-    { label: "Twitter", to: "https://twitter.com", external: true },
-    { label: "Discord", to: "https://discord.com", external: true },
-  ],
 };
 
 const Footer = () => {
@@ -42,35 +37,11 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Connect links */}
-          <div>
-            <h4 className="text-xs font-semibold text-[#111111] uppercase tracking-wider mb-3">Connect</h4>
-            <ul className="space-y-2">
-              {footerLinks.GitHub.map(({ label, to, external }) => (
-                <li key={label}>
-                  {external ? (
-                    <a
-                      href={to}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#6b7280] hover:text-[#111111] transition-colors"
-                    >
-                      {label}
-                    </a>
-                  ) : (
-                    <Link to={to} className="text-sm text-[#6b7280] hover:text-[#111111] transition-colors">
-                      {label}
-                    </Link>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+
         </div>
 
         <div className="mt-8 pt-6 border-t border-[#d1cdc5] flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[#6b7280]">© 2024 Launchpad. All rights reserved.</p>
-          <p className="text-xs text-[#6b7280]">Made with ❤️ for students</p>
         </div>
       </div>
     </footer>

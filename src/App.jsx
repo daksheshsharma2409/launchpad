@@ -8,6 +8,7 @@ import Discover from './pages/Discover';
 import Saved from './pages/Saved';
 import OpportunityDetail from './pages/OpportunityDetail';
 import Onboarding from './pages/Onboarding';
+import Profile from './pages/Profile';
 
 // Protected Route Wrapper to enforce onboarding
 const ProtectedRoute = ({ children }) => {
@@ -54,6 +55,7 @@ const AnimatedRoutes = () => {
         <Route path="/jobs" element={<ProtectedRoute><PageWrapper><Discover /></PageWrapper></ProtectedRoute>} />
         
         <Route path="/saved" element={<ProtectedRoute><PageWrapper><Saved /></PageWrapper></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><PageWrapper><Profile /></PageWrapper></ProtectedRoute>} />
         <Route path="/opportunity/:id" element={<ProtectedRoute><PageWrapper><OpportunityDetail /></PageWrapper></ProtectedRoute>} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
