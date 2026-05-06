@@ -57,10 +57,17 @@ export const OpportunityDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-14">
+    <div className="min-h-screen flex flex-col pt-14 relative overflow-hidden" style={{ background: "#f5f0e8" }}>
       <Navbar />
 
-      <main className="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+      {/* Background System */}
+      <div className="absolute inset-0 pointer-events-none -z-10">
+        <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(#d1cdc5 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        <div className="absolute top-0 right-[-5%] w-[600px] h-[600px] rounded-full bg-[#2563eb] opacity-[0.10] blur-[110px]" />
+        <div className="absolute bottom-[10vh] left-[-8%] w-[500px] h-[500px] rounded-full bg-[#f5c518] opacity-[0.12] blur-[100px]" />
+      </div>
+
+      <main className="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full relative z-10">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           {/* Left Graphic Placeholder */}

@@ -69,15 +69,34 @@ export const Discover = () => {
   const categoryLabel = categories.find((c) => c.id === activeCategory)?.label || "Discover";
 
   return (
-    <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col pt-14 relative overflow-hidden" style={{ background: "#f5f0e8" }}>
       <Navbar />
-      
-      {/* Decorative Background Orbs */}
-      <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-[#2563eb] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
-      <div className="absolute top-[40vh] left-[-200px] w-[500px] h-[500px] bg-[#f5c518] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
-      
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full z-10 relative">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+
+      {/* Background System — matches Home */}
+      <div className="absolute inset-0 pointer-events-none -z-10">
+        <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "radial-gradient(#d1cdc5 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+        <div className="absolute top-0 right-[-8%] w-[600px] h-[600px] rounded-full bg-[#2563eb] opacity-[0.12] blur-[110px]" />
+        <div className="absolute top-[50vh] left-[-8%] w-[500px] h-[500px] rounded-full bg-[#f5c518] opacity-[0.13] blur-[100px]" />
+      </div>
+
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full relative z-10">
+
+        {/* Page Header */}
+        <div className="mb-8">
+          <span className="inline-block text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full bg-[#111111] text-white mb-3">
+            {activeCategory === "all" ? "✦ All Opportunities" : `✦ ${categoryLabel}`}
+          </span>
+          <h1 className="font-display font-black text-5xl md:text-6xl text-[#111111] leading-[0.9] tracking-tight">
+            {activeCategory === "all" ? "Discover" : categoryLabel}
+          </h1>
+          <p className="text-[#6b7280] mt-2 text-base">
+            {activeCategory === "all"
+              ? "Find your next big thing. Curated opportunities for those who refuse to wait in line."
+              : `Explore the latest ${categoryLabel.toLowerCase()} tailored for you.`}
+          </p>
+        </div>
+        {/* Filter row */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
           <div className="flex-1">
             <FilterBar activeCategory={activeCategory} />
           </div>
@@ -168,12 +187,8 @@ export const Discover = () => {
         )}
 
         <FeedSection
-          title={activeCategory === "all" ? "Discover" : categoryLabel}
-          description={
-            activeCategory === "all"
-              ? "Find your next big thing. Curated opportunities for those who refuse to wait in line."
-              : `Explore the latest ${categoryLabel.toLowerCase()} tailored for you.`
-          }
+          title=""
+          description=""
           opportunities={filteredOpportunities}
           isLoading={isLoading}
           emptyMessage="No opportunities match your filters. Try clearing them!"
