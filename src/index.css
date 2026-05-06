@@ -23,6 +23,8 @@ html {
 body {
   font-family: var(--font-body);
   background-color: #f5f0e8;
+  background-image: radial-gradient(#d1cdc5 1px, transparent 1px);
+  background-size: 24px 24px;
   color: #111111;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

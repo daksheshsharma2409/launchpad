@@ -69,10 +69,14 @@ export const Discover = () => {
   const categoryLabel = categories.find((c) => c.id === activeCategory)?.label || "Discover";
 
   return (
-    <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8]">
+    <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8] relative overflow-hidden">
       <Navbar />
       
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      {/* Decorative Background Orbs */}
+      <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-[#2563eb] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
+      <div className="absolute top-[40vh] left-[-200px] w-[500px] h-[500px] bg-[#f5c518] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
+      
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full z-10 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
           <div className="flex-1">
             <FilterBar activeCategory={activeCategory} />

@@ -30,10 +30,14 @@ export const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8]">
+    <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8] relative overflow-hidden">
       <Navbar />
       
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+      {/* Decorative Background Orbs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#f5c518] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
+      <div className="absolute bottom-[20vh] left-[-150px] w-[600px] h-[600px] bg-[#2563eb] rounded-full filter blur-[120px] opacity-[0.15] -z-10 pointer-events-none"></div>
+      
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full z-10 relative">
         {/* Profile Header */}
         <div className="bg-white border border-[#d1cdc5] rounded-xl p-8 mb-12 shadow-sm flex flex-col md:flex-row gap-8 items-start md:items-center">
           <div className="w-24 h-24 bg-[#f5c518] text-[#111111] font-display font-black text-5xl rounded-full flex items-center justify-center border-2 border-[#111111] shadow-[4px_4px_0_#111111] flex-shrink-0">
