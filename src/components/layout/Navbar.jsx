@@ -86,12 +86,12 @@ const Navbar = () => {
                 </Link>
               </div>
             ) : (
-              <button
-                onClick={() => login({ name: "Student Demo" })}
+              <Link
+                to="/onboarding"
                 className="inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#333] transition-colors"
               >
-                Login
-              </button>
+                Get Started
+              </Link>
             )}
           </div>
         </div>
@@ -124,12 +124,12 @@ const Navbar = () => {
             </div>
           </Link>
         ) : (
-          <button onClick={() => login({ name: "Student Demo" })} className="p-2 flex flex-col items-center gap-1 text-[#9ca3af]">
+          <Link to="/onboarding" className="p-2 flex flex-col items-center gap-1 text-[#9ca3af]">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-          </button>
+          </Link>
         )}
       </div>
     </>
