@@ -1,15 +1,22 @@
+import { useState, useEffect } from "react";
 import { useApp } from "../context/AppContext";
-import { getOpportunityById } from "../data/opportunities";
+import { fetchOpportunityById } from "../data/opportunitiesApi";
 import FeedSection from "../components/feed/FeedSection";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 
 export const Saved = () => {
   const { savedOpportunities } = useApp();
-  
-  const opportunities = savedOpportunities
-    .map(getOpportunityById)
-    .filter(Boolean); // Filter out any undefined (e.g. if an ID was saved but data deleted)
+  const [opportunities, setOpportunities] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all(savedOpportunities.map(id => fetchOpportunityById(id))).then(results => {
+      setOpportunities(results.filter(Boolean));
+      setIsLoading(false);
+    });
+  }, [savedOpportunities]);
 
   return (
     <div className="min-h-screen flex flex-col pt-14">

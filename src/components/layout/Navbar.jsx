@@ -18,9 +18,7 @@ const navLinks = [
 const Navbar = () => {
   const navRef = useRef(null);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { currentUser, login, logout } = useApp();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { currentUser, login } = useApp();
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -44,11 +42,13 @@ const Navbar = () => {
   const isActive = (to) => location.pathname === to;
 
   return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-[#d1cdc5]/60"
-      style={{ transform: "translateY(0)", background: "rgba(245,240,232,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
-    >
+    <>
+      {/* ── DESKTOP NAVBAR ─────────────────────────────────────────── */}
+      <nav
+        ref={navRef}
+        className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b border-[#d1cdc5]/60"
+        style={{ transform: "translateY(0)", background: "rgba(245,240,232,0.85)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" }}
+      >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
@@ -76,7 +76,7 @@ const Navbar = () => {
           {/* Right Actions */}
           <div className="flex items-center gap-3">
             {currentUser ? (
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <Link
                   to="/profile"
                   className="w-8 h-8 rounded-full bg-[#f5c518] text-[#111111] font-bold flex items-center justify-center shadow-sm border border-[#111111] hover:scale-105 transition-transform"
@@ -88,76 +88,51 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={() => login({ name: "Student Demo" })}
-                className="hidden sm:inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#333] transition-colors"
+                className="inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#333] transition-colors"
               >
                 Login
               </button>
             )}
-            {/* Mobile hamburger */}
-            <button
-              className="md:hidden p-2 rounded text-[#111111]"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Toggle menu"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                {menuOpen ? (
-                  <path d="M18 6L6 18M6 6l12 12" />
-                ) : (
-                  <path d="M3 12h18M3 6h18M3 18h18" />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-[#f5f0e8] border-t border-[#d1cdc5] px-4 py-3 flex flex-col gap-2">
-          {navLinks.map(({ to, label }) => (
-            <Link
-              key={to}
-              to={to}
-              onClick={() => setMenuOpen(false)}
-              className={`py-2 text-sm font-medium ${isActive(to) ? "text-[#111111] font-semibold" : "text-[#6b7280]"}`}
-            >
-              {label}
-            </Link>
-          ))}
-          {currentUser ? (
-            <>
-              <Link
-                to="/profile"
-                onClick={() => setMenuOpen(false)}
-                className="mt-2 inline-flex items-center justify-center bg-[#f5c518] text-[#111111] text-sm font-bold px-4 py-2 rounded-full border border-[#111111]"
-              >
-                Profile
-              </Link>
-              <button
-                onClick={() => {
-                  logout();
-                  setMenuOpen(false);
-                  navigate("/");
-                }}
-                className="mt-2 inline-flex items-center justify-center border border-[#111111] text-[#111111] text-sm font-medium px-4 py-2 rounded-full"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => {
-                login({ name: "Student Demo" });
-                setMenuOpen(false);
-              }}
-              className="mt-2 inline-flex items-center justify-center bg-[#111111] text-white text-sm font-medium px-4 py-2 rounded-full"
-            >
-              Login
-            </button>
-          )}
-        </div>
-      )}
     </nav>
+
+      {/* ── MOBILE BOTTOM DOCK (Instagram style) ────────────────────── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-[#e5e7eb] flex justify-around items-center px-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-2">
+        <Link to="/" className={`p-2 flex flex-col items-center gap-1 transition-colors ${isActive("/") ? "text-[#111111]" : "text-[#9ca3af]"}`}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive("/") ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive("/") ? "0" : "2"}>
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </Link>
+        <Link to="/discover" className={`p-2 flex flex-col items-center gap-1 transition-colors ${isActive("/discover") ? "text-[#111111]" : "text-[#9ca3af]"}`}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={isActive("/discover") ? "3" : "2"}>
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </Link>
+        <Link to="/saved" className={`p-2 flex flex-col items-center gap-1 transition-colors ${isActive("/saved") ? "text-[#111111]" : "text-[#9ca3af]"}`}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill={isActive("/saved") ? "currentColor" : "none"} stroke="currentColor" strokeWidth={isActive("/saved") ? "0" : "2"} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+        </Link>
+        {currentUser ? (
+          <Link to="/profile" className={`p-1 flex flex-col items-center gap-1`}>
+            <div className={`w-7 h-7 rounded-full overflow-hidden flex items-center justify-center font-bold text-xs transition-colors border-2 ${isActive("/profile") ? "border-[#111111] text-[#111111] bg-[#f5c518]" : "border-transparent text-[#111111] bg-[#f5c518]"}`}>
+              {currentUser.name ? currentUser.name[0].toUpperCase() : "U"}
+            </div>
+          </Link>
+        ) : (
+          <button onClick={() => login({ name: "Student Demo" })} className="p-2 flex flex-col items-center gap-1 text-[#9ca3af]">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </button>
+        )}
+      </div>
+    </>
   );
 };
 

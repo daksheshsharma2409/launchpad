@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useApp } from "../context/AppContext";
-import { getOpportunityById } from "../data/opportunities";
+import { fetchOpportunityById } from "../data/opportunitiesApi";
 import FeedSection from "../components/feed/FeedSection";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -14,8 +14,20 @@ export const Profile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("saved");
 
-  const savedOpps = savedOpportunities.map(getOpportunityById).filter(Boolean);
-  const appliedOpps = appliedOpportunities.map(getOpportunityById).filter(Boolean);
+  const [savedOpps, setSavedOpps] = useState([]);
+  const [appliedOpps, setAppliedOpps] = useState([]);
+
+  useEffect(() => {
+    Promise.all(savedOpportunities.map(id => fetchOpportunityById(id))).then(results => {
+      setSavedOpps(results.filter(Boolean));
+    });
+  }, [savedOpportunities]);
+
+  useEffect(() => {
+    Promise.all(appliedOpportunities.map(id => fetchOpportunityById(id))).then(results => {
+      setAppliedOpps(results.filter(Boolean));
+    });
+  }, [appliedOpportunities]);
   const displayedOpps = activeTab === "saved" ? savedOpps : appliedOpps;
 
   if (!currentUser) {

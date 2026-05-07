@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { gsap } from "gsap";
-import { getOpportunityById } from "../data/opportunities";
+import { fetchOpportunityById } from "../data/opportunitiesApi";
 import { useApp } from "../context/AppContext";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -27,7 +27,8 @@ const SectionLabel = ({ children }) => (
 
 export const OpportunityDetail = () => {
   const { id } = useParams();
-  const opportunity = getOpportunityById(id);
+  const [opportunity, setOpportunity] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { savedOpportunities, toggleSave, appliedOpportunities, applyOpportunity } = useApp();
   const isSaved = opportunity && savedOpportunities.includes(opportunity.id);
   const isApplied = opportunity && appliedOpportunities.includes(opportunity.id);
@@ -35,9 +36,17 @@ export const OpportunityDetail = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    if (countdownRef.current) {
+    setIsLoading(true);
+    fetchOpportunityById(id).then((opp) => {
+      setOpportunity(opp);
+      setIsLoading(false);
+    });
+  }, [id]);
+
+  useEffect(() => {
+    if (opportunity && countdownRef.current) {
       let targetNumber = 14;
-      const match = opportunity?.deadlineDisplay?.match(/(\d+)/);
+      const match = opportunity.deadlineDisplay?.match(/(\d+)/);
       if (match) targetNumber = parseInt(match[1], 10);
       gsap.fromTo(countdownRef.current, { innerHTML: 0 }, {
         innerHTML: targetNumber, duration: 2, ease: "power2.out", snap: { innerHTML: 1 }
@@ -45,6 +54,20 @@ export const OpportunityDetail = () => {
     }
   }, [opportunity]);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8]">
+        <Navbar />
+        <main className="flex-grow flex items-center justify-center">
+          <svg className="animate-spin h-10 w-10 text-[#2563eb]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10" className="opacity-20" />
+            <path d="M4 12a8 8 0 018-8" className="opacity-80" />
+          </svg>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
   if (!opportunity) {
     return (
       <div className="min-h-screen flex flex-col pt-14 bg-[#f5f0e8]">

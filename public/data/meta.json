@@ -1,0 +1,10 @@
+{
+  "total": 785,
+  "byCategory": {
+    "hackathon": 125,
+    "workshop": 85,
+    "cultural": 65,
+    "internship": 205,
+    "job": 305
+  }
+}

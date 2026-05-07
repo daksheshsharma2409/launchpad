@@ -10,7 +10,7 @@ const footerLinks = {
 
 const Footer = () => {
   return (
-    <footer className="bg-[#f5f0e8] border-t border-[#d1cdc5] mt-auto">
+    <footer className="bg-[#f5f0e8] border-t border-[#d1cdc5] mt-auto pb-20 md:pb-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}

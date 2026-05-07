@@ -114,7 +114,7 @@ export const Home = () => {
             {/* Main heading */}
             <h1
               ref={headingRef}
-              className="font-display font-black text-[clamp(3.5rem,10vw,8.5rem)] text-[#111111] leading-[0.88] tracking-tighter uppercase flex flex-wrap justify-center mb-8"
+              className="font-display font-black text-[clamp(2.3rem,11vw,8.5rem)] text-[#111111] leading-[0.88] tracking-tighter uppercase flex flex-wrap justify-center mb-6 sm:mb-8"
             >
               {splitText("Find Your")}
               <span className="word inline-block overflow-hidden mr-[0.3em] text-[#2563eb]">
@@ -394,7 +394,7 @@ export const Home = () => {
             <div ref={statsRef} className="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-white/10 pt-16">
               {[
                 { target: 10, suffix: "k+", label: "Active Students", color: "#f5c518" },
-                { target: 65, suffix: "+", label: "Opportunities Listed", color: "#2563eb" },
+                { target: 780, suffix: "+", label: "Opportunities Listed", color: "#2563eb" },
                 { target: 8, suffix: "", label: "Source Platforms", color: "#7c3aed" },
               ].map((stat, i) => (
                 <div key={i}>
